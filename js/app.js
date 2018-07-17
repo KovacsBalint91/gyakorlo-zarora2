@@ -1,5 +1,3 @@
-var searchText = document.querySelector('#search-text').value;
-var searchButton = document.querySelector('#search-button');
 var mainDiv = document.querySelector('.spaceship-list');
 var shipsDiv = document.createElement('div');
 var listDiv = document.createElement('div');
@@ -64,13 +62,16 @@ function nullToUnknown(arr) {
   return newArray;
 }
 // Negyedik feladat. A hajók adatainak kiíratása.
-// nullToUnknown(deleteNullConsum(costAscBubbleSort(arr)));
+// displayArray(nullToUnknown(deleteNullConsum(costAscBubbleSort(userDatas))));
+function showResult(arr) {
+  document.querySelector('.listOfShips').innerHTML =  displayArray(nullToUnknown(deleteNullConsum(costAscBubbleSort(arr))));
+}
 
 // 6/1 feladat. 1 fős legénységgel rendelkező hajók darabszáma.
 function oneManCrew(arr) {
   var count = 0;
   for (var i = 0; i < arr.length; i++) {
-    if (arr[i].crew === '1') {
+    if (parseInt(arr[i].crew, 10) === 1) {
       count++;
     }
   }
@@ -79,21 +80,22 @@ function oneManCrew(arr) {
 
 // 6/2 feladat. Legnagyobb cargo capacityvel rendelkező hajó neve.
 function biggestCargo(arr) {
-  var biggest = arr[0];
-  var biggestModel = arr[0].model;
+  var biggest = parseInt(arr[0].cargo_capacity, 10);
+  var modelNumber = 0;
   for ( var i = 0; i < arr.length; i++) {
-    if (arr[i].cargo_capacity > biggest.cargo_capacity) {
-      arr[i].model = biggest;
+    if (parseInt(arr[i].cargo_capacity, 10)  > biggest) {
+      biggest = parseInt(arr[i].cargo_capacity, 10);
+      modelNumber = i;
     }
-    return biggestModel;
   }
+  return arr[modelNumber].model;
 }
 
 // 6/3 feladat. Az összes hajó utasainak (passengers) összesített száma
 function sumPassengers(arr) {
   var shipPassengers = 0;
   for (var i = 0; i < arr.length; i++) {
-    if (arr[i].passengers > 0) {
+    if (parseInt(arr[i].passengers, 10) > 0) {
       shipPassengers += parseInt(arr[i].passengers, 10);
     }
   }
@@ -102,35 +104,36 @@ function sumPassengers(arr) {
 
 // 6/4 feladat. A leghosszabb(lengthiness) hajó képének a neve
 function longestShip(arr) {
-  var longest = arr[0];
-  var longestPic = arr[0].image;
+  var longest = parseInt(arr[0].lengthiness, 10);
+  var modelNumber = 0;
   for ( var i = 0; i < arr.length; i++) {
-    if (arr[i].lengthiness > longest.lengthiness) {
-      longest = arr[i];
+    if (parseInt(arr[i].lengthiness, 10) > longest) {
+      longest = parseInt(arr[i].lengthiness, 10);
+      modelNumber = i;
     }
   }
-  return longestPic;
+  return arr[modelNumber].image;
 }
 
+function showStatistics(inputArray) {
+  document.querySelector('.statOfShips').innerHTML =
+  'Number of one man crew ships: ' + '<b>' + oneManCrew(inputArray) + '</b>' + '<br>' +
+  'Ship with the biggest cargo capacity: '  + '<b>' + biggestCargo(inputArray) + '</b>' + '<br>' +
+  'Summa passengers: ' + '<b>' + sumPassengers(inputArray) + '</b>' + '<br>' +
+  'Picture name of the longest ship ever: ' + '<b>' + longestShip(inputArray) + '</b>';
+}
 
 // 7. feladat. Model szerinti keresés.
 
 // ABCbe rendezés
-function modelAscSort(arr) {
-  var length = arr.length;
-  var change;
-  while (length > 0) {
-    change = 0;
-    for (var j = 0; j < length; j++) {
-      for (var i = j + 1; i < length; i++) {
-        if (arr[j].model.toLowerCase() > arr[i].model.toLowerCase()) {
-          [arr[j], arr[i]] = [arr[i], arr[j]];
 
-          change = j;
-        }
+function modelAscSort(arr) {
+  for (var i = 0; i < arr.length - 1; i++) {
+    for (var j = i + 1; j < arr.length; j++) {
+      if (arr[i].model > arr[j].model) {
+        [arr[i], arr[j]] = [arr[j], arr[i]];
       }
     }
-    length = change;
   }
   return arr;
 }
@@ -176,7 +179,6 @@ function displayArray(shipsToDisplay) {
 function sideDivDisplay(elem) {
   var info = document.querySelector(`#${elem.id}`);
   document.querySelector('#sideDiv').innerHTML = info.innerHTML;
-  console.log(info);
 }
 
 function  displayObject(arr) {
@@ -186,11 +188,6 @@ function  displayObject(arr) {
   }
   return message;
 }
-
-
-/* document.querySelector('#ship29').addEventListener('click', function () {
-  document.querySelector('.one-spaceship').innerHTML = 'mukodjTeSzar';
-});*/
 
 //---------------------------
 function getData(url, callbackFunc) {
@@ -208,25 +205,9 @@ function successAjax(xhttp) {
   // Innen lesz elérhető a JSON file tartalma, tehát az adatok amikkel dolgoznod kell
   var userDatas = JSON.parse(xhttp.responseText);
   // Innen lehet hívni.
-  // console.log(userDatas);
-  // console.log(costAscBubbleSort(userDatas, 'cost_in_credits'));
-  // console.log(deleteNullConsum(userDatas, 'consumables'));
-  // console.log(nullToUnknown(userDatas));
-  // console.log(shipsDatas(userDatas));
-  // console.log(oneManCrew(userDatas, 'crew'));
-  // console.log(biggestCargo(userDatas, 'cargo_capacity'));
-  // console.log(sumPassengers(userDatas, 'passengers'));
-  // console.log(longestShip(userDatas, 'lengthiness'));
-  // console.log(modelSearch('Modifie', userDatas));
-  // odelSearch('modif', userDatas);
-  // console.log(displayArray(modelAscSort(userDatas)));
-  document.querySelector('.listOfShips').innerHTML = displayArray(nullToUnknown(deleteNullConsum(costAscBubbleSort(userDatas))));
-  document.querySelector('.statOfShips').innerHTML =
-  'Number of one man crew ships: ' + '<b>' + oneManCrew(userDatas) + '</b>' + '<br>' +
-  'Ship with the biggest cargo capacity: '  + '<b>' + biggestCargo(userDatas) + '</b>' + '<br>' +
-  'Summa passengers: ' + '<b>' + sumPassengers(userDatas) + '</b>' + '<br>' +
-  'Picture name of the longest ship ever: ' + '<b>' + longestShip(userDatas) + '</b>';
-  document.querySelector('#sideDiv').innerHTML = showOneShip(modelSearch('modi', userDatas));
+  showStatistics(userDatas);
+  showResult(userDatas);
+  document.querySelector('#sideDiv').innerHTML = showOneShip(modelSearch('all t', userDatas));
 }
 getData('/json/spaceships.json', successAjax);
 
